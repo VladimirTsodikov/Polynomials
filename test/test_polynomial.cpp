@@ -80,14 +80,14 @@ TEST(Polynomial, can_Add_correctly)
 	EXPECT_EQ(c, d);
 }
 
-TEST(Polinomial, can_SubEq_correctly)
+TEST(Polynomial, can_SubEq_correctly)
 {
 	Polynomial a("32x^4yz^5"), b("x^7+12y"), c("-x^7+32x^4yz^5-12y");
 	a -= b;
 	EXPECT_EQ(c, a);
 }
 
-TEST(List, can_Sub_correctly)
+TEST(Polynomial, can_Sub_correctly)
 {
 	Polynomial a("32x^4yz^5"), b("x^7+12y"), c("-x^7+32x^4yz^5-12y"), d;
 	d = a - b;

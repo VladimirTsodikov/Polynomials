@@ -12,10 +12,10 @@ int main()
 	bool a= (s==k);
 	m = s*k;
 	k *= k;
-	k.clear();
-	k = s;
+	//k.clear();
+	//k = s;
 	s *= 4;
-	s.Print();
+	k.Print();
 	//std::cout<<a;
 	/*int degree = 0;
 	int DegreeX = 0;

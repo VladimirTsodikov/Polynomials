@@ -3,6 +3,9 @@
 #include <string>
 #include <cmath>	//для функции fabs (модуль разности) и pow (возведение в степень - для побитового сдвига)
 
+#define EXP 1048576 //2^20 - для побитового сдвига
+#define EXP1 1024	//2^10 - для побитового сдвига
+
 //реализуем полином на базе циклического списка с головой
 class Polynomial //: public List<double>
 {
@@ -19,7 +22,6 @@ protected:	//реализуем внутреннюю структуру - мон
 		~Monomial() {}
 		Monomial& operator*=(const Monomial& input)
 		{
-			int EXP = pow(2, 20), EXP1=pow(2,10);
 			if (degree / EXP + input.degree / EXP > 1023 || degree % EXP / EXP1 + input.degree % EXP / EXP1 > 1023 || degree % EXP1 + input.degree % EXP1 > 1023)
 				throw "Degree greater than the maximum allowable";	//проверка, чтобы не было переполнения степеней. 
 			//Иначе алгоритм хранения трёх показателей степеней трёх переменных в одном поле int перестанет работать
@@ -238,7 +240,7 @@ void Polynomial::insert(Monomial* to_ins)	//вставляем САМО ЗВЕН
 	{
 		second->coeff += to_ins->coeff;
 		delete to_ins;
-		if (second->coeff == 0)	//удаляем звено, если коэффициент стал равен нулю
+		if (second->coeff <1e-10)	//удаляем звено, если коэффициент стал равен нулю
 		{
 			first->next = second->next;
 			delete second;
@@ -258,7 +260,6 @@ void Polynomial::Print()
 	if (count == 0) { std::cout << 0; }
 	else 
 	{
-		int EXP = pow(2, 20), EXP1 = pow(2, 10);
 		Monomial* tmp = head->next;
 		bool flg = true;	//проверка на первый вход в цикл - чтобы не выводить знак, если коэффициент положительный
 		while (tmp != head)
@@ -309,7 +310,7 @@ void Polynomial::Print()
 
 	}
 }
-
+/*
 Polynomial& Polynomial::operator+=(const Polynomial& Pol)
 {
 	Monomial* tmp = Pol.head->next;
@@ -320,6 +321,41 @@ Polynomial& Polynomial::operator+=(const Polynomial& Pol)
 		tmp = tmp->next;
 	}
 	return *this;
+}*/
+
+Polynomial& Polynomial::operator+=(const Polynomial& Pol)//принцип основан на упорядоченности обоих полиномов и том, что моном с одинаковыми степенями может быть только один (без повторений)
+{
+	Monomial *prev1 = head, *curr1 = head->next, *curr2 = Pol.head->next;
+	while (curr2 != Pol.head)
+	{
+		bool flg = true;
+		if (curr2->degree > curr1->degree)
+		{
+			//Monomial* to_ins = new Monomial(*curr2);
+			Monomial* to_ins = new Monomial(curr2->coeff, curr2->degree);
+			prev1->next = to_ins;
+			to_ins->next = curr1;
+			prev1 = prev1->next;	//значение curr1 сохраняется, не двигается
+			curr2 = curr2->next;	//сдвигаемся вперёд по вставляемому полиному, т.к. произошла вставка
+			count++;
+			flg = false;
+		}
+		else if (curr2->degree == curr1->degree)
+		{
+			curr1->coeff += curr2->coeff;
+			curr2 = curr2->next;	//сдвигаемся вперёд по вставляемому полиному, т.к. произошла вставка
+			if (curr1->coeff < 1e-10)	//если коэффициент стал равен нулю
+			{
+				curr1 = curr1->next;
+				delete prev1->next; //удаляем звено, у которого коэффициент стал равен нулю (бывшее звено curr1)
+				prev1->next = curr1;
+				count--;
+				flg = false;
+			}
+		}
+		if (flg) { prev1 = prev1->next; curr1 = curr1->next; }//двигаем оба указателя в тек. полин. когда не произошло вставки (степень тек. монома была больше ИЛИ равная и итоговый коэф. не равен нулю)
+	}
+	return* this;
 }
 
 Polynomial Polynomial::operator+(const Polynomial& Pol)
