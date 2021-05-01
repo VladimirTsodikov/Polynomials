@@ -43,11 +43,20 @@ TEST(Polynomial, operator_of_doudle_equal_is_correctly)
 	EXPECT_EQ(true, a==b);
 }
 
-TEST(Polynomial, operator_of__not_equal_is_correct)
+TEST(Polynomial, operator_of_not_equal_is_correct)
 {
 	Polynomial a("43x^2y-35z");
 	Polynomial b("-35z+24");
 	EXPECT_EQ(true, a != b);
+}
+
+TEST(Polynomial, can_compare_polynomials_correctly)
+{
+	Polynomial a("43x^2y-35z"), b("43x^2y-35z-2"), c("15x^2y^6-12y^348z15+z-2"), d("2x^2y^6-12y^348z15+z-2");
+	EXPECT_EQ(true, a < b);
+	EXPECT_EQ(true, b < c);
+	EXPECT_EQ(true, c > d);
+	EXPECT_EQ(true, a < d);
 }
 
 TEST(Polynomial, can_delete_monomial_with_zero_coefficients)
@@ -80,14 +89,14 @@ TEST(Polynomial, can_Add_correctly)
 	EXPECT_EQ(c, d);
 }
 
-TEST(Polinomial, can_SubEq_correctly)
+TEST(Polynomial, can_SubEq_correctly)
 {
 	Polynomial a("32x^4yz^5"), b("x^7+12y"), c("-x^7+32x^4yz^5-12y");
 	a -= b;
 	EXPECT_EQ(c, a);
 }
 
-TEST(List, can_Sub_correctly)
+TEST(Polynomial, can_Sub_correctly)
 {
 	Polynomial a("32x^4yz^5"), b("x^7+12y"), c("-x^7+32x^4yz^5-12y"), d;
 	d = a - b;
